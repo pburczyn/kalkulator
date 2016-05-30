@@ -10,18 +10,17 @@ namespace Kalkulator.Tests
         [Test]
         public void konstruktor_inizcjalizacja()
         {
-            Calc calc = new Calc(2, Calc.LiczenieTyp.Brutto, Calc.LiczenieMarzaTyp.odSta);
+            Calc calc = new Calc(2, Calc.TypyLiczenia.Brutto);
 
             Assert.AreEqual(calc.Precyzja, 2);
-            Assert.AreEqual(Calc.LiczenieTyp.Brutto, calc.SposobLiczenia);
-            Assert.AreEqual(Calc.LiczenieMarzaTyp.odSta, calc.SposobLiczeniaMarzy);
+            Assert.AreEqual(Calc.TypyLiczenia.Brutto, calc.SposobLiczenia);
         }
 
         [Test]
         public void sprzedaz_od_netto_przez_ustawienie_ceny_netto()
         {
             //Arrange
-            Calc calc = new Calc(2, Calc.LiczenieTyp.Netto, Calc.LiczenieMarzaTyp.odSta);
+            Calc calc = new Calc(2, Calc.TypyLiczenia.Netto);
 
             //Act
             calc.VatProc = 23;
@@ -37,7 +36,7 @@ namespace Kalkulator.Tests
         public void sprzedaz_od_netto_przez_ustawienie_ceny_brutto()
         {
             //Arrange
-            Calc calc = new Calc(2, Calc.LiczenieTyp.Netto, Calc.LiczenieMarzaTyp.odSta);
+            Calc calc = new Calc(2, Calc.TypyLiczenia.Netto);
 
             //Act
             calc.VatProc = 23;
@@ -53,7 +52,7 @@ namespace Kalkulator.Tests
         public void sprzedaz_od_netto_przez_ustawienie_ceny_brutto_wylicz_wartosci()
         {
             //Arrange
-            Calc calc = new Calc(2, Calc.LiczenieTyp.Netto, Calc.LiczenieMarzaTyp.odSta);
+            Calc calc = new Calc(2, Calc.TypyLiczenia.Netto);
 
             //Act
             calc.VatProc = 23;
@@ -69,7 +68,7 @@ namespace Kalkulator.Tests
         public void sprzedaz_od_netto_przez_ustawienie_ceny_brutto_wylicz_wartosci_inny_przypadek()
         {
             //Arrange
-            Calc calc = new Calc(2, Calc.LiczenieTyp.Netto, Calc.LiczenieMarzaTyp.odSta);
+            Calc calc = new Calc(2, Calc.TypyLiczenia.Netto);
 
             //Act
             calc.VatProc = 23;
@@ -86,7 +85,7 @@ namespace Kalkulator.Tests
         public void sprzedaz_od_brutto_przez_ustawienie_ceny_brutto_wylicz_wartosci_inny_przypadek()
         {
             //Arrange
-            Calc calc = new Calc(2, Calc.LiczenieTyp.Brutto, Calc.LiczenieMarzaTyp.odSta);
+            Calc calc = new Calc(2, Calc.TypyLiczenia.Brutto);
 
             //Act
             calc.VatProc = 23;
@@ -99,12 +98,12 @@ namespace Kalkulator.Tests
             Assert.AreEqual(600M, calc.WartoscSprzedazyBrutto);
         }
 
-        [TestCase(Calc.LiczenieTyp.Brutto, 23, 35, 56.91, 70)]
-        [TestCase(Calc.LiczenieTyp.Netto, 23, 35, 56.92, 70.01)]
-        public void zmiana_ilosc_powoduje_zmiene_wartosci_sprzedazy(Calc.LiczenieTyp typ, int vat, decimal cenaBrutto, decimal wartoscNetto, decimal wartoscBrutto)
+        [TestCase(Calc.TypyLiczenia.Brutto, 23, 35, 56.91, 70)]
+        [TestCase(Calc.TypyLiczenia.Netto, 23, 35, 56.92, 70.01)]
+        public void zmiana_ilosc_powoduje_zmiene_wartosci_sprzedazy(Calc.TypyLiczenia typ, int vat, decimal cenaBrutto, decimal wartoscNetto, decimal wartoscBrutto)
         {
             //Arrange
-            Calc calc = new Calc(2, typ, Calc.LiczenieMarzaTyp.odSta);
+            Calc calc = new Calc(2, typ);
 
             //Act
             calc.VatProc = vat;
@@ -128,7 +127,7 @@ namespace Kalkulator.Tests
         public void zmiana_zaokraglenia_cena_sprzedazy_netto(int precyzja, decimal cena, decimal cenaZaokraglona)
         {
             //Arrange
-            Calc calc = new Calc(precyzja, Calc.LiczenieTyp.Netto, Calc.LiczenieMarzaTyp.odSta);
+            Calc calc = new Calc(precyzja, Calc.TypyLiczenia.Netto);
 
             //Act
             calc.CenaSprzedazyNetto = cena;
@@ -148,7 +147,7 @@ namespace Kalkulator.Tests
         public void zmiana_zaokraglenia_cena_sprzedazy_brutto(int precyzja, decimal cena, decimal cenaZaokraglona)
         {
             //Arrange
-            Calc calc = new Calc(precyzja, Calc.LiczenieTyp.Brutto, Calc.LiczenieMarzaTyp.odSta);
+            Calc calc = new Calc(precyzja, Calc.TypyLiczenia.Brutto);
 
             //Act
             calc.CenaSprzedazyBrutto = cena;
@@ -156,5 +155,109 @@ namespace Kalkulator.Tests
             //Assert
             Assert.AreEqual(cenaZaokraglona, calc.CenaSprzedazyBrutto);
         }
+
+        [Test]
+        public void zakup_od_netto_przez_ustawienie_ceny_netto()
+        {
+            //Arrange
+            Calc calc = new Calc(2, Calc.TypyLiczenia.Netto);
+
+            //Act
+            calc.VatProc = 23;
+            calc.Ilosc = 1;
+            calc.CenaZakupuNetto = 28.46M;
+
+            //Assert
+            Assert.AreEqual(28.46M, calc.CenaZakupuNetto);
+            Assert.AreEqual(35.01M, calc.CenaZakupuBrutto);
+        }
+
+        [Test]
+        public void zakup_od_netto_przez_ustawienie_ceny_brutto()
+        {
+            //Arrange
+            Calc calc = new Calc(2, Calc.TypyLiczenia.Netto);
+
+            //Act
+            calc.VatProc = 23;
+            calc.Ilosc = 1;
+            calc.CenaZakupuBrutto = 35.00M;
+
+            //Assert
+            Assert.AreEqual(28.46M, calc.CenaZakupuNetto);
+            Assert.AreEqual(35.01M, calc.CenaZakupuBrutto);
+        }
+
+        [TestCase(90, 18.18, 110, 22.22)]
+        public void wyliczanie_sprzedazy_na_podstawie_marzy(decimal cenaZakupu, decimal marza, decimal oczekiwanaCenaSprzedazy, decimal oczekiwanyNarzut)
+        {
+            //Arrange
+            Calc calc = new Calc(2, Calc.TypyLiczenia.Netto);
+
+            //Act
+            calc.CenaZakupuNetto = cenaZakupu;
+            calc.Marza = marza;
+            
+            //Assert
+            Assert.AreEqual(oczekiwanaCenaSprzedazy, calc.CenaSprzedazyNetto);
+            Assert.AreEqual(oczekiwanyNarzut, calc.Narzut);
+        }
+
+        [TestCase(90, 22.22, 110, 18.18)]
+        [TestCase(35, 30, 45.5, 23.08)]
+        public void wyliczanie_sprzedazy_na_podstawie_narzutu(decimal cenaZakupu, decimal narzut, decimal oczekiwanaCenaSprzedazy, decimal oczekiwanaMarza)
+        {
+            //Arrange
+            Calc calc = new Calc(2, Calc.TypyLiczenia.Netto);
+
+            //Act
+            calc.CenaZakupuNetto = cenaZakupu;
+            calc.Narzut = narzut;
+
+            //Assert
+            Assert.AreEqual(oczekiwanaCenaSprzedazy, calc.CenaSprzedazyNetto);
+            Assert.AreEqual(oczekiwanaMarza, calc.Marza);
+        }
+
+        [TestCase(90, 110, 18.18, 22.22)]
+        [TestCase(0, 123, 100, null)]
+        [TestCase(0, 0, null, null)]
+        [TestCase(1, 1, 0, 0)]
+        public void wyliczanie_marzy_na_podstawie_zakup_sprzedaz(decimal cenaZakupu, decimal cenaSprzedazy, decimal? oczekiwanaMarza, decimal? oczekiwanyNarzut)
+        {
+            //Arrange
+            Calc calc = new Calc(2, Calc.TypyLiczenia.Netto);
+
+            //Act
+            calc.CenaZakupuNetto = cenaZakupu;
+            calc.CenaSprzedazyNetto = cenaSprzedazy;
+
+            //Assert
+            Assert.AreEqual(oczekiwanaMarza, calc.Marza);
+            Assert.AreEqual(oczekiwanyNarzut, calc.Narzut);
+        }
+
+        [Test]
+        public void zmiana_vat_powoduje_zmiane_brutto()
+        {
+            //Arrange
+            Calc calc = new Calc(2, Calc.TypyLiczenia.Brutto);
+
+            //Act
+            calc.CenaZakupuNetto = 10M;
+            calc.CenaSprzedazyNetto = 10M;
+            calc.VatProc = 23;
+            
+            //Assert
+            Assert.AreEqual(12.3M, calc.CenaZakupuBrutto);
+            Assert.AreEqual(12.3M, calc.CenaSprzedazyBrutto);
+
+            calc.VatProc = 8;
+
+            //Assert
+            Assert.AreEqual(10.8M, calc.CenaZakupuBrutto);
+            Assert.AreEqual(10.8M, calc.CenaSprzedazyBrutto);
+        }
+
     }
 }
