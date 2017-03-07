@@ -197,8 +197,10 @@ namespace Kalkulator.Tests
             //Act
             calc.CenaZakupuNetto = cenaZakupu;
             calc.Marza = marza;
-            
+
             //Assert
+            Assert.AreEqual(cenaZakupu, calc.CenaZakupuNetto);
+            Assert.AreEqual(marza, calc.Marza);
             Assert.AreEqual(oczekiwanaCenaSprzedazy, calc.CenaSprzedazyNetto);
             Assert.AreEqual(oczekiwanyNarzut, calc.Narzut);
         }
@@ -247,16 +249,53 @@ namespace Kalkulator.Tests
             calc.CenaZakupuNetto = 10M;
             calc.CenaSprzedazyNetto = 10M;
             calc.VatProc = 23;
-            
+
             //Assert
+            Assert.AreEqual(10M, calc.CenaZakupuNetto);
+            Assert.AreEqual(10M, calc.CenaSprzedazyNetto);
             Assert.AreEqual(12.3M, calc.CenaZakupuBrutto);
             Assert.AreEqual(12.3M, calc.CenaSprzedazyBrutto);
 
             calc.VatProc = 8;
 
             //Assert
+            Assert.AreEqual(10M, calc.CenaZakupuNetto);
+            Assert.AreEqual(10M, calc.CenaSprzedazyNetto);
             Assert.AreEqual(10.8M, calc.CenaZakupuBrutto);
             Assert.AreEqual(10.8M, calc.CenaSprzedazyBrutto);
+        }
+
+        [Test]
+        public void rabat_zbyt_wysoki_excetpion()
+        {
+            //Arrange
+            Calc calc = new Calc(2, Calc.TypyLiczenia.Brutto);
+
+            //Act
+            calc.Ilosc = 1;
+            calc.CenaSprzedazyBrutto = 10;
+
+            //Assert
+            Assert.Catch<CalcRabatException>(() => calc.Rabat = 100);
+            //Assert.Throws(Is.TypeOf<CalcRabatException>().And.Message)
+        }
+
+        [TestCase(Calc.TypyLiczenia.Netto, 150, 4, 6, 458.52, 563.98)]
+        [TestCase(Calc.TypyLiczenia.Brutto, 150, 4, 6, 458.54, 564)]
+        public void rabat_poprawnosc_wyliczania(Calc.TypyLiczenia typ, decimal cenaBrutto, decimal ilosc, decimal rabat, decimal oczekiwanaWN, decimal oczekiwanaWB)
+        {
+            //Arrange
+            Calc calc = new Calc(2, typ);
+            
+            //Act
+            calc.VatProc = 23;
+            calc.Ilosc = ilosc;
+            calc.CenaSprzedazyBrutto = cenaBrutto;
+            calc.Rabat = rabat;
+
+            //Assert
+            Assert.AreEqual(oczekiwanaWN, calc.WartoscSprzedazyNetto);
+            Assert.AreEqual(oczekiwanaWB, calc.WartoscSprzedazyBrutto);
         }
 
     }

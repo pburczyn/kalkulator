@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Kalkulator
 {
@@ -84,14 +81,14 @@ namespace Kalkulator
             {
                 _cenaSprzedazyNetto = DostosujZaokraglenie(_cenaSprzedazyNetto);
                 _cenaSprzedazyBrutto = OdNetto(CenaSprzedazyNetto);
-                WartoscSprzedazyNetto = WartoscNaPodstawieCeny(CenaSprzedazyNetto);
+                WartoscSprzedazyNetto = WartoscNaPodstawieCeny(CenaSprzedazyNetto, _rabat);
                 WartoscSprzedazyBrutto = OdNetto(WartoscSprzedazyNetto);
             }
             else
             {
                 _cenaSprzedazyBrutto = DostosujZaokraglenie(_cenaSprzedazyBrutto);
                 _cenaSprzedazyNetto = OdBrutto(CenaSprzedazyBrutto);
-                WartoscSprzedazyBrutto = WartoscNaPodstawieCeny(CenaSprzedazyBrutto);
+                WartoscSprzedazyBrutto = WartoscNaPodstawieCeny(CenaSprzedazyBrutto, _rabat);
                 WartoscSprzedazyNetto = OdBrutto(WartoscSprzedazyBrutto);
             }
         }
@@ -106,9 +103,9 @@ namespace Kalkulator
             return DostosujZaokraglenie(wartosc / (VatProc / 100.0M + 1));
         }
 
-        private decimal WartoscNaPodstawieCeny(decimal cena)
+        private decimal WartoscNaPodstawieCeny(decimal cena, decimal rabat)
         {
-            return DostosujZaokraglenie(cena * Ilosc);
+            return DostosujZaokraglenie(DostosujZaokraglenie(cena * (100 - rabat) / 100) * Ilosc);
         }
 
         private decimal DostosujZaokraglenie(decimal wartosc)
@@ -155,14 +152,14 @@ namespace Kalkulator
             {
                 _cenaZakupuNetto = DostosujZaokraglenie(_cenaZakupuNetto);
                 _cenaZakupuBrutto = OdNetto(CenaZakupuNetto);
-                WartoscZakupuNetto = WartoscNaPodstawieCeny(CenaZakupuNetto);
+                WartoscZakupuNetto = WartoscNaPodstawieCeny(CenaZakupuNetto, 0);
                 WartoscZakupuBrutto = OdNetto(WartoscZakupuNetto);
             }
             else
             {
                 _cenaZakupuBrutto = DostosujZaokraglenie(_cenaZakupuBrutto);
                 _cenaZakupuNetto = OdBrutto(CenaZakupuBrutto);
-                WartoscZakupuBrutto = WartoscNaPodstawieCeny(CenaZakupuBrutto);
+                WartoscZakupuBrutto = WartoscNaPodstawieCeny(CenaZakupuBrutto, 0);
                 WartoscZakupuNetto = OdBrutto(WartoscZakupuBrutto);
             }
         }
@@ -230,6 +227,25 @@ namespace Kalkulator
             _marza = DostosujZaokraglenie((decimal)(100 - 100 / (narzut + 100) * 100));
 
             return DostosujZaokraglenie((decimal)(cenaZakupu * (_narzut / 100 + 1)));
+        }
+
+        private decimal _rabat;
+        public decimal Rabat
+        {
+            get { return _rabat; }
+            set 
+            {
+                if (value >= 100)
+                    throw new CalcRabatException("Zbyt wysoki rabat.");
+
+                _rabat = value;
+                PrzeliczSprzedaz(SposobLiczenia);
+            }
+        }
+
+        private decimal WyliczIloscNaPodstawieWartosci(decimal cena, decimal wartosc)
+        {
+            return wartosc / cena;
         }
     }
 }
